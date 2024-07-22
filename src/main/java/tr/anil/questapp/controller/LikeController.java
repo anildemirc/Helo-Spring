@@ -3,6 +3,8 @@ package tr.anil.questapp.controller;
 import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.entity.Like;
+import tr.anil.questapp.request.LikeCreateRequest;
+import tr.anil.questapp.response.LikeResponse;
 import tr.anil.questapp.service.LikeService;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class LikeController {
 
 
     @GetMapping
-    public List<Like> getAllLike(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
+    public List<LikeResponse> getAllLike(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId){
         return likeService.getAllLike(userId, postId);
     }
 
@@ -30,11 +32,11 @@ public class LikeController {
     }
 
     @PostMapping
-    public Like saveLike(@RequestParam Long userId, @RequestParam Long postId) {
-        return likeService.save(userId, postId);
+    public LikeResponse saveLike(@RequestBody LikeCreateRequest likeCreateRequest) {
+        return likeService.save(likeCreateRequest);
     }
 
-    @DeleteMapping("/likeId")
+    @DeleteMapping("/{likeId}")
     public void deleteLikeById(@PathVariable Long likeId) {
         likeService.deleteById(likeId);
     }

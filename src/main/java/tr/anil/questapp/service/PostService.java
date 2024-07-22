@@ -1,11 +1,14 @@
 package tr.anil.questapp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tr.anil.questapp.dao.PostDao;
+import tr.anil.questapp.entity.Like;
 import tr.anil.questapp.entity.Post;
 import tr.anil.questapp.entity.User;
 import tr.anil.questapp.request.PostCreateRequest;
 import tr.anil.questapp.request.PostUpdateRequest;
+import tr.anil.questapp.response.LikeResponse;
 import tr.anil.questapp.response.PostResponse;
 
 import java.util.List;
@@ -17,11 +20,14 @@ public class PostService {
 
     private PostDao postDao;
     private UserService userService;
+    private LikeService likeService;
 
-    public PostService(PostDao postDao, UserService userService) {
+    public PostService(PostDao postDao, UserService userService,LikeService likeService) {
         this.postDao = postDao;
         this.userService = userService;
+        this.likeService = likeService;
     }
+
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
@@ -29,7 +35,10 @@ public class PostService {
             list= postDao.findByUserId(userId.get());
         else
             list= postDao.findAll();
-        return list.stream().map(p -> new PostResponse(p)).collect(Collectors.toList());
+        return list.stream().map(p -> {
+            List<LikeResponse> likes = likeService.getAllLike(Optional.empty(), Optional.of(p.getId()));
+            return new PostResponse(p,likes);
+        }).collect(Collectors.toList());
     }
 
     public Post getPostById(Long postId) {
