@@ -8,9 +8,12 @@ import tr.anil.questapp.entity.Post;
 import tr.anil.questapp.entity.User;
 import tr.anil.questapp.request.CommentCreateRequest;
 import tr.anil.questapp.request.CommentUpdateRequest;
+import tr.anil.questapp.response.CommentResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -27,26 +30,28 @@ public class CommentService {
 
 
     @Transactional
-    public List<Comment> getAllComments(Optional<Long> userId, Optional<Long> postId) {
+    public List<CommentResponse> getAllComments(Optional<Long> userId, Optional<Long> postId) {
+        List<Comment> list = new ArrayList<>();
         if (userId.isPresent() && postId.isPresent()) {
-            return commentDao.findByUserIdAndPostId(userId.get(),postId.get());
+            list = commentDao.findByUserIdAndPostId(userId.get(),postId.get());
         }
         else if (userId.isPresent()) {
-            return commentDao.findAllByUserId(userId.get());
+            list = commentDao.findAllByUserId(userId.get());
         }
         else if (postId.isPresent()) {
-            return commentDao.findAllByPostId(postId.get());
+            list = commentDao.findAllByPostId(postId.get());
         }
-        return commentDao.findAll();
-
-
+        else {
+            list = commentDao.findAll();
+        }
+        return list.stream().map(p -> new CommentResponse(p)).collect(Collectors.toList());
     }
 
-    public Comment getCommentById(Long commentId) {
-        return commentDao.findById(commentId).orElse(null);
+    public CommentResponse getCommentById(Long commentId) {
+        return new CommentResponse(commentDao.findById(commentId).orElse(null));
     }
 
-    public Comment save(CommentCreateRequest commentCreateRequest) {
+    public CommentResponse save(CommentCreateRequest commentCreateRequest) {
         User user = userService.getUser(commentCreateRequest.getUserId());
         if (user == null)
             return null;
@@ -58,16 +63,16 @@ public class CommentService {
         comment.setText(commentCreateRequest.getText());
         comment.setUser(user);
         comment.setPost(post);
-        return commentDao.save(comment);
+        return new CommentResponse(commentDao.save(comment));
     }
 
 
-    public Comment updateComment(Long commentId, CommentUpdateRequest commentUpdateRequest) {
+    public CommentResponse updateComment(Long commentId, CommentUpdateRequest commentUpdateRequest) {
         Optional<Comment> comment = commentDao.findById(commentId);
         if (comment.isPresent()){
             Comment newComment = comment.get();
             newComment.setText(commentUpdateRequest.getText());
-            return commentDao.save(newComment);
+            return new CommentResponse(commentDao.save(newComment));
         }
         return null;
     }

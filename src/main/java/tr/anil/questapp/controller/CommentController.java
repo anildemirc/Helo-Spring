@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.entity.Comment;
 import tr.anil.questapp.request.CommentCreateRequest;
 import tr.anil.questapp.request.CommentUpdateRequest;
+import tr.anil.questapp.response.CommentResponse;
 import tr.anil.questapp.service.CommentService;
 
 import java.util.List;
@@ -20,22 +21,22 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<Comment> getAllComments(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
+    public List<CommentResponse> getAllComments(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
         return commentService.getAllComments(userId,postId);
     }
 
     @GetMapping("/{commentId}")
-    public Comment getCommentById(@PathVariable Long commentId) {
+    public CommentResponse getCommentById(@PathVariable Long commentId) {
         return commentService.getCommentById(commentId);
     }
 
     @PostMapping
-    public Comment saveComment(@RequestBody CommentCreateRequest commentCreateRequest) {
+    public CommentResponse saveComment(@RequestBody CommentCreateRequest commentCreateRequest) {
         return commentService.save(commentCreateRequest);
     }
 
     @PutMapping("/{commentId}")
-    public Comment updateComment(@PathVariable Long commentId,@RequestBody CommentUpdateRequest commentUpdateRequest) {
+    public CommentResponse updateComment(@PathVariable Long commentId,@RequestBody CommentUpdateRequest commentUpdateRequest) {
         return commentService.updateComment(commentId, commentUpdateRequest);
     }
 

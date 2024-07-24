@@ -13,3 +13,10 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+
+questapp:
+  app:
+    secret: questApp
+  expires:
+    in: 6048000000
