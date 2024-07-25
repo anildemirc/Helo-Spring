@@ -11,6 +11,7 @@ import tr.anil.questapp.request.CommentUpdateRequest;
 import tr.anil.questapp.response.CommentResponse;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,6 +64,7 @@ public class CommentService {
         comment.setText(commentCreateRequest.getText());
         comment.setUser(user);
         comment.setPost(post);
+        comment.setCreateDate(new Date());
         return new CommentResponse(commentDao.save(comment));
     }
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.dao.UserDao;
 import tr.anil.questapp.entity.User;
+import tr.anil.questapp.response.UserResponse;
 import tr.anil.questapp.service.UserService;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable Long userId) {
-        return userService.getUser(userId);
+    public UserResponse getUser(@PathVariable Long userId) {
+        return new UserResponse(userService.getUser(userId));
     }
 
     @PutMapping("/{userId}")
@@ -44,7 +45,9 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-
-
+    @GetMapping("/activity/{userId}")
+    public List<Object> getActivityByUser(@PathVariable Long userId) {
+        return userService.getActivityByUser(userId);
+    }
 
 }

@@ -11,6 +11,7 @@ import tr.anil.questapp.request.PostUpdateRequest;
 import tr.anil.questapp.response.LikeResponse;
 import tr.anil.questapp.response.PostResponse;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,6 +46,12 @@ public class PostService {
         return postDao.findById(postId).orElse(null);
     }
 
+    public PostResponse getPostByIdWithLikes(Long postId) {
+        Post post = postDao.findById(postId).orElse(null);
+        List<LikeResponse> likes = likeService.getAllLike(Optional.empty(), Optional.of(postId));
+        return new PostResponse(post, likes);
+    }
+
     public Post savePost(PostCreateRequest postCreateRequest) {
         User user = userService.getUser(postCreateRequest.getUserId());
         if (user == null)
@@ -53,6 +60,7 @@ public class PostService {
         post.setText(postCreateRequest.getText());
         post.setTitle(postCreateRequest.getTitle());
         post.setUser(user);
+        post.setCreateDate(new Date());
         return postDao.save(post);
     }
 
