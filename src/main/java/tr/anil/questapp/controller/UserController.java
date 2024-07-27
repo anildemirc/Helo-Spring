@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.dao.UserDao;
 import tr.anil.questapp.entity.User;
 import tr.anil.questapp.response.UserResponse;
+import tr.anil.questapp.service.FollowService;
 import tr.anil.questapp.service.UserService;
 
 import java.util.List;
@@ -15,9 +16,11 @@ import java.util.Optional;
 public class UserController {
 
     private UserService userService;
+    private FollowService followService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FollowService followService) {
         this.userService = userService;
+        this.followService = followService;
     }
 
     @GetMapping
@@ -32,7 +35,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserResponse getUser(@PathVariable Long userId) {
-        return new UserResponse(userService.getUser(userId));
+        return new UserResponse(userService.getUser(userId), followService.getFollowedCountByUserId(userId));
     }
 
     @PutMapping("/{userId}")

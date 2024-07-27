@@ -1,5 +1,6 @@
 package tr.anil.questapp.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tr.anil.questapp.dao.PostDao;
@@ -29,11 +30,11 @@ public class PostService {
         this.likeService = likeService;
     }
 
-
+    @Transactional
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
         if (userId.isPresent())
-            list= postDao.findByUserId(userId.get());
+            list= postDao.findByUserId(userId.get().longValue());
         else
             list= postDao.findAll();
         return list.stream().map(p -> {

@@ -19,4 +19,8 @@ questapp:
   app:
     secret: questApp
   expires:
-    in: 6048000000
+    in: 3600000
+  refresh:
+    token:
+      expires:
+        in: 604800

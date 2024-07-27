@@ -1,9 +1,6 @@
 package tr.anil.questapp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -15,7 +12,9 @@ public class User {
     @GeneratedValue
     Long id;
 
+    @Column(nullable = false, unique = true)
     String username;
+    @Column(nullable = false)
     String password;
     int avatar;
 

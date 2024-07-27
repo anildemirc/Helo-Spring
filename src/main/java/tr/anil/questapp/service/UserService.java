@@ -1,5 +1,6 @@
 package tr.anil.questapp.service;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import tr.anil.questapp.dao.CommentDao;
 import tr.anil.questapp.dao.LikeDao;
@@ -8,7 +9,9 @@ import tr.anil.questapp.dao.UserDao;
 import tr.anil.questapp.entity.Comment;
 import tr.anil.questapp.entity.Like;
 import tr.anil.questapp.entity.User;
+import tr.anil.questapp.response.UserResponse;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +45,12 @@ public class UserService {
     public User updateUser(Long userId, User user) {
         User userOld = this.getUser(userId);
         if (userOld != null) {
-            userOld.setUsername(user.getUsername());
-            userOld.setPassword(user.getUsername());
-            userOld.setAvatar(user.getAvatar());
+            if ( user.getUsername() != null)
+                userOld.setUsername(user.getUsername());
+            if (user.getPassword() != null)
+                userOld.setPassword(user.getUsername());
+            if (user.getAvatar() != 0)
+                userOld.setAvatar(user.getAvatar());
             return userDao.save(userOld);
         }
         return null;
