@@ -17,4 +17,7 @@ public interface FollowDao extends JpaRepository<Follow, Long> {
 
     @Query(value = "select count(*) from _follow where followed_user_id = :userId", nativeQuery = true)
     Long getFollowedCountByUserId(@Param("userId") Long userId);
+
+    @Query(value = "select count(*) from _follow where follower_user_id = :userId", nativeQuery = true)
+    Long getFollowerCountByUserId(@Param("userId") Long userId);
 }

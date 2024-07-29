@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserResponse getUser(@PathVariable Long userId) {
-        return new UserResponse(userService.getUser(userId), followService.getFollowedCountByUserId(userId));
+        return new UserResponse(userService.getUser(userId), followService.getFollowedCountByUserId(userId), followService.getFollowerCountByUserId(userId));
     }
 
     @PutMapping("/{userId}")

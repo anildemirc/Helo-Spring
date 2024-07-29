@@ -45,6 +45,9 @@ public class FollowService {
     public Long getFollowedCountByUserId(Long userId) {
         return followDao.getFollowedCountByUserId(userId);
     }
+    public Long getFollowerCountByUserId(Long userId) {
+        return followDao.getFollowerCountByUserId(userId);
+    }
 
     public void deleteById(Long followId) {
         followDao.deleteById(followId);
