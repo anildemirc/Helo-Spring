@@ -12,6 +12,8 @@ public class PostResponse {
     Long id;
     Long userId;
     String username;
+    int userFollowerCount;
+    int userFollowedCount;
     String title;
     String text;
     Date createTime;
@@ -25,5 +27,17 @@ public class PostResponse {
         this.text = entity.getText();
         this.createTime = new Date();
         this.postLikes = likes;
+    }
+
+    public PostResponse(Post entity, List<LikeResponse> likes, int userFollowerCount, int userFollowedCount) {
+        this.id = entity.getId();
+        this.userId = entity.getUser().getId();
+        this.username = entity.getUser().getUsername();
+        this.title = entity.getTitle();
+        this.text = entity.getText();
+        this.createTime = new Date();
+        this.postLikes = likes;
+        this.userFollowedCount = userFollowedCount;
+        this.userFollowerCount = userFollowerCount;
     }
 }

@@ -23,23 +23,28 @@ public class PostService {
     private PostDao postDao;
     private UserService userService;
     private LikeService likeService;
+    private FollowService followService;
 
-    public PostService(PostDao postDao, UserService userService,LikeService likeService) {
+    public PostService(PostDao postDao, UserService userService, LikeService likeService, FollowService followService) {
         this.postDao = postDao;
         this.userService = userService;
         this.likeService = likeService;
+        this.followService = followService;
     }
 
     @Transactional
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
         if (userId.isPresent())
-            list= postDao.findByUserId(userId.get().longValue());
-        else
+            list = postDao.findByUserId(userId.get().longValue());
+        else {
             list= postDao.findAll();
+        }
         return list.stream().map(p -> {
             List<LikeResponse> likes = likeService.getAllLike(Optional.empty(), Optional.of(p.getId()));
-            return new PostResponse(p,likes);
+            int followerCount = followService.getFollowerCountByUserId(p.getUser().getId());
+            int followedCount = followService.getFollowedCountByUserId(p.getUser().getId());
+            return new PostResponse(p,likes, followerCount, followedCount);
         }).collect(Collectors.toList());
     }
 

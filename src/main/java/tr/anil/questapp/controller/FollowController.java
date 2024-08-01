@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.entity.Follow;
 import tr.anil.questapp.request.FollowRequest;
 import tr.anil.questapp.response.FollowResponse;
+import tr.anil.questapp.response.UserResponse;
 import tr.anil.questapp.service.FollowService;
 
 import java.util.List;
@@ -28,12 +29,12 @@ public class FollowController {
 
 
     @GetMapping("/getmyfolloweds/{userId}")
-    public ResponseEntity<List<FollowResponse>> getAllLikeByFollowedUserId(@PathVariable Long userId){
+    public ResponseEntity<List<UserResponse>> getAllFollowedUserByFollowedUserId(@PathVariable Long userId){
         return new ResponseEntity<>(followService.getFollowListByFollowedUserId(userId), HttpStatus.OK);
     }
 
     @GetMapping("/getmyfollowers/{userId}")
-    public ResponseEntity<List<FollowResponse>> getAllLikeByFollowerUserId(@PathVariable Long userId){
+    public ResponseEntity<List<UserResponse>> getAllFollowerUserByFollowerUserId(@PathVariable Long userId){
         return new ResponseEntity<>(followService.getFollowListByFollowerUserId(userId), HttpStatus.OK);
     }
 

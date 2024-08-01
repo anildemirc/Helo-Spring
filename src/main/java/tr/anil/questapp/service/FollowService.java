@@ -7,6 +7,7 @@ import tr.anil.questapp.exception.SystemException;
 import tr.anil.questapp.request.FollowRequest;
 import tr.anil.questapp.response.FollowResponse;
 import tr.anil.questapp.response.LikeResponse;
+import tr.anil.questapp.response.UserResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,14 +23,14 @@ public class FollowService {
         this.userService = userService;
     }
 
-    public List<FollowResponse> getFollowListByFollowedUserId(Long userId) {
+    public List<UserResponse> getFollowListByFollowedUserId(Long userId) {
         List<Follow> followList = followDao.findAllByFollowedUserId(userId);
-        return followList.stream().map(p -> new FollowResponse(p)).collect(Collectors.toList());
+        return followList.stream().map(p -> new UserResponse(p.getFollowerUser())).collect(Collectors.toList());
     }
 
-    public List<FollowResponse> getFollowListByFollowerUserId(Long userId) {
+    public List<UserResponse> getFollowListByFollowerUserId(Long userId) {
         List<Follow> followList = followDao.findAllByFollowerUserId(userId);
-        return followList.stream().map(p -> new FollowResponse(p)).collect(Collectors.toList());
+        return followList.stream().map(p -> new UserResponse(p.getFollowedUser())).collect(Collectors.toList());
     }
 
     public FollowResponse save(FollowRequest followRequest) {
@@ -42,10 +43,10 @@ public class FollowService {
         return new FollowResponse(followDao.save(follow));
     }
 
-    public Long getFollowedCountByUserId(Long userId) {
+    public int getFollowedCountByUserId(Long userId) {
         return followDao.getFollowedCountByUserId(userId);
     }
-    public Long getFollowerCountByUserId(Long userId) {
+    public int getFollowerCountByUserId(Long userId) {
         return followDao.getFollowerCountByUserId(userId);
     }
 

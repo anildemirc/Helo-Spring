@@ -9,18 +9,18 @@ public class    UserResponse {
     Long id;
     int avatarId;
     String username;
-    Long countFollowed;
-    Long countFollower;
+    int countFollowed;
+    int countFollower;
 
     public UserResponse(User user) {
         this.id = user.getId();
         this.avatarId = user.getAvatar();
         this.username = user.getUsername();
-        this.countFollowed = 0L;
-        this.countFollower = 0L;
+        this.countFollowed = 0;
+        this.countFollower = 0;
     }
 
-    public UserResponse(User user, Long countFollowed, Long countFollower) {
+    public UserResponse(User user, int countFollowed, int countFollower) {
         this.id = user.getId();
         this.avatarId = user.getAvatar();
         this.username = user.getUsername();
