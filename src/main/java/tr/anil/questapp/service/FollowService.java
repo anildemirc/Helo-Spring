@@ -3,6 +3,8 @@ package tr.anil.questapp.service;
 import org.springframework.stereotype.Service;
 import tr.anil.questapp.dao.FollowDao;
 import tr.anil.questapp.entity.Follow;
+import tr.anil.questapp.entity.User;
+import tr.anil.questapp.enums.NotificationTypes;
 import tr.anil.questapp.exception.SystemException;
 import tr.anil.questapp.request.FollowRequest;
 import tr.anil.questapp.response.FollowResponse;
@@ -17,47 +19,53 @@ public class FollowService {
 
     private FollowDao followDao;
     private UserService userService;
+    private NotificationService notificationService;
 
-    public FollowService(FollowDao followDao, UserService userService) {
+    public FollowService(FollowDao followDao, UserService userService, NotificationService notificationService) {
         this.followDao = followDao;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
-    public List<UserResponse> getFollowListByFollowedUserId(Long userId) {
-        List<Follow> followList = followDao.findAllByFollowedUserId(userId);
-        return followList.stream().map(p -> new UserResponse(p.getFollowerUser())).collect(Collectors.toList());
+    public List<User> getFollowListByFollowingUserId(Long userId) {
+        List<Follow> followList = followDao.findAllByFollowingUserId(userId);
+        return followList.stream().map(p -> p.getFollowerUser()).collect(Collectors.toList());
     }
 
-    public List<UserResponse> getFollowListByFollowerUserId(Long userId) {
+    public List<User> getFollowListByFollowerUserId(Long userId) {
         List<Follow> followList = followDao.findAllByFollowerUserId(userId);
-        return followList.stream().map(p -> new UserResponse(p.getFollowedUser())).collect(Collectors.toList());
+        return followList.stream().map(p -> p.getFollowingUser()).collect(Collectors.toList());
     }
 
-    public FollowResponse save(FollowRequest followRequest) {
-        if (followDao.findByFollowedUserIdAndFollowerUserId(followRequest.getFollowedId(), followRequest.getFollowerId()) != null)
+    public Follow save(FollowRequest followRequest) {
+        if (followDao.findByFollowedUserIdAndFollowerUserId(followRequest.getFollowingId(), followRequest.getFollowerId()) != null)
             throw new SystemException("Kullanıcı takip etme işleminde hata");
 
         Follow follow = new Follow();
         follow.setFollowerUser(userService.getUser(followRequest.getFollowerId()));
-        follow.setFollowedUser(userService.getUser(followRequest.getFollowedId()));
-        return new FollowResponse(followDao.save(follow));
-    }
-
-    public int getFollowedCountByUserId(Long userId) {
-        return followDao.getFollowedCountByUserId(userId);
-    }
-    public int getFollowerCountByUserId(Long userId) {
-        return followDao.getFollowerCountByUserId(userId);
+        follow.setFollowingUser(userService.getUser(followRequest.getFollowingId()));
+        follow = followDao.save(follow);
+        userService.addFollow(follow);
+        notificationService.saveNotification(followRequest.getFollowerId(), followRequest.getFollowingId(), null, follow.getId(), NotificationTypes.FOLLOW.getNotificationTypes());
+        return follow;
     }
 
     public void deleteById(Long followId) {
+        userService.deleteFollow(getFollowById(followId));
         followDao.deleteById(followId);
     }
 
-    public FollowResponse getFollow(Long followerId, Long followedId) {
-        Follow follow = followDao.findByFollowedUserIdAndFollowerUserId(followedId, followerId);
+    public Follow getFollowById(Long id) {
+        Follow follow = followDao.findById(id).orElse(null);
         if (follow == null)
             return null;
-        return new FollowResponse(follow);
+        return follow;
+    }
+
+    public Follow getFollow(Long userId, Long followingId) {
+        Follow follow = followDao.findByFollowedUserIdAndFollowerUserId(userId, followingId);
+        if (follow == null)
+            return null;
+        return follow;
     }
 }

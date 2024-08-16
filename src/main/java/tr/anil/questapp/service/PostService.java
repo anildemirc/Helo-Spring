@@ -7,6 +7,7 @@ import tr.anil.questapp.dao.PostDao;
 import tr.anil.questapp.entity.Like;
 import tr.anil.questapp.entity.Post;
 import tr.anil.questapp.entity.User;
+import tr.anil.questapp.exception.PostNotFoundException;
 import tr.anil.questapp.request.PostCreateRequest;
 import tr.anil.questapp.request.PostUpdateRequest;
 import tr.anil.questapp.response.LikeResponse;
@@ -33,18 +34,20 @@ public class PostService {
     }
 
     @Transactional
-    public List<PostResponse> getAllPosts(Optional<Long> userId) {
+    public List<Post> getAllPosts(Optional<Long> userId) {
         List<Post> list;
         if (userId.isPresent())
             list = postDao.findByUserId(userId.get().longValue());
-        else {
+        else
             list= postDao.findAll();
-        }
-        return list.stream().map(p -> {
-            List<LikeResponse> likes = likeService.getAllLike(Optional.empty(), Optional.of(p.getId()));
-            int followerCount = followService.getFollowerCountByUserId(p.getUser().getId());
-            int followedCount = followService.getFollowedCountByUserId(p.getUser().getId());
-            return new PostResponse(p,likes, followerCount, followedCount);
+        return list;
+    }
+
+    public List<PostResponse> convertPostListToPostResponseList(List<Post> posts) {
+        return posts.stream().map(p -> {
+            int followerCount = p.getUser().getFollowerCount();
+            int followingCount = p.getUser().getFollowingCount();
+            return new PostResponse(p, followerCount, followingCount);
         }).collect(Collectors.toList());
     }
 
@@ -52,10 +55,8 @@ public class PostService {
         return postDao.findById(postId).orElse(null);
     }
 
-    public PostResponse getPostByIdWithLikes(Long postId) {
-        Post post = postDao.findById(postId).orElse(null);
-        List<LikeResponse> likes = likeService.getAllLike(Optional.empty(), Optional.of(postId));
-        return new PostResponse(post, likes);
+    public Post getPostByIdWithLikes(Long postId) {
+        return postDao.findById(postId).orElse(null);
     }
 
     public Post savePost(PostCreateRequest postCreateRequest) {
@@ -83,5 +84,27 @@ public class PostService {
 
     public void deletePostById(Long postId) {
         postDao.deleteById(postId);
+    }
+
+    public void addLike(Post post) {
+        try {
+            if (post.getCountLike() < 0)
+                throw new Exception("Like sayısı 0 dan az olamaz");
+            post.setCountLike(post.getCountLike()+1);
+            postDao.save(post);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteLike(Post post) {
+        try {
+            if (post.getCountLike()<1)
+                throw new Exception("Like sayısı 0 dan az olamaz");
+            post.setCountLike(post.getCountLike()-1);
+            postDao.save(post);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

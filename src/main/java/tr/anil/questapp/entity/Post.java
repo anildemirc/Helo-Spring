@@ -1,6 +1,5 @@
 package tr.anil.questapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -22,7 +21,6 @@ public class Post {
     @OnDelete(action = OnDeleteAction.CASCADE)
     User user;
 
-
     String title;
     @Lob
     @Column(columnDefinition = "text")
@@ -30,4 +28,6 @@ public class Post {
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
+
+    int countLike;
 }

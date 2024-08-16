@@ -21,7 +21,7 @@ public class Follow {
     User followerUser;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "followed_user_id", nullable = false)
+    @JoinColumn(name = "following_user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    User followedUser;
+    User followingUser;
 }

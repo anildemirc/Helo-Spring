@@ -6,5 +6,5 @@ import lombok.Data;
 public class FollowRequest {
 
     Long followerId;
-    Long followedId;
+    Long followingId;
 }

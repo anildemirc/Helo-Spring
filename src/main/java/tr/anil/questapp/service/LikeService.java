@@ -6,9 +6,9 @@ import tr.anil.questapp.dao.LikeDao;
 import tr.anil.questapp.entity.Like;
 import tr.anil.questapp.entity.Post;
 import tr.anil.questapp.entity.User;
+import tr.anil.questapp.enums.NotificationTypes;
 import tr.anil.questapp.request.LikeCreateRequest;
 import tr.anil.questapp.response.LikeResponse;
-import tr.anil.questapp.response.PostResponse;
 
 
 import java.util.List;
@@ -21,14 +21,16 @@ public class LikeService {
     private LikeDao likeDao;
     private UserService userService;
     private PostService postService;
+    private NotificationService notificationService;
 
-    public LikeService(LikeDao likeDao, UserService userService, @Lazy PostService postService) {
+    public LikeService(LikeDao likeDao, UserService userService, @Lazy PostService postService, NotificationService notificationService) {
         this.likeDao = likeDao;
         this.userService = userService;
         this.postService = postService;
+        this.notificationService = notificationService;
     }
 
-    public List<LikeResponse> getAllLike(Optional<Long> userId, Optional<Long> postId) {
+    public List<Like> getAllLike(Optional<Long> userId, Optional<Long> postId) {
         List<Like> list;
         if (userId.isPresent() && postId.isPresent())
             list = likeDao.findByUserIdAndPostId(userId.get(),postId.get());
@@ -38,14 +40,14 @@ public class LikeService {
             list = likeDao.findByPostId(postId.get());
         else
             list = likeDao.findAll();
-        return list.stream().map(p -> new LikeResponse(p)).collect(Collectors.toList());
+        return list;
     }
 
     public Like getLikeById(Long likeId) {
         return likeDao.findById(likeId).orElse(null);
     }
 
-    public LikeResponse save(LikeCreateRequest likeCreateRequest) {
+    public Like save(LikeCreateRequest likeCreateRequest) {
         User user = userService.getUser(likeCreateRequest.getUserId());
         if (user == null)
             return null;
@@ -55,10 +57,14 @@ public class LikeService {
         Like like = new Like();
         like.setUser(user);
         like.setPost(post);
-        return new LikeResponse(likeDao.save(like));
+        like = likeDao.save(like);
+        postService.addLike(post);
+        notificationService.saveNotification(likeCreateRequest.getUserId(), post.getUser().getId(), post.getId(), like.getId(), NotificationTypes.LIKE.getNotificationTypes());
+        return like;
     }
 
     public void deleteById(Long likeId) {
+        postService.deleteLike(getLikeById(likeId).getPost());
         likeDao.deleteById(likeId);
     }
 }

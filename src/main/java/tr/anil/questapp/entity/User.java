@@ -16,7 +16,8 @@ public class User {
     String username;
     @Column(nullable = false)
     String password;
+
+    int followingCount;
+    int followerCount;
     int avatar;
-
-
 }

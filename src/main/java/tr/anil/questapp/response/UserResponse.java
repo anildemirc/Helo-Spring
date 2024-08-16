@@ -9,14 +9,14 @@ public class    UserResponse {
     Long id;
     int avatarId;
     String username;
-    int countFollowed;
+    int countFollowing;
     int countFollower;
 
     public UserResponse(User user) {
         this.id = user.getId();
         this.avatarId = user.getAvatar();
         this.username = user.getUsername();
-        this.countFollowed = 0;
+        this.countFollowing = 0;
         this.countFollower = 0;
     }
 
@@ -24,7 +24,7 @@ public class    UserResponse {
         this.id = user.getId();
         this.avatarId = user.getAvatar();
         this.username = user.getUsername();
-        this.countFollowed = countFollowed;
+        this.countFollowing = countFollowed;
         this.countFollower = countFollower;
     }
 }

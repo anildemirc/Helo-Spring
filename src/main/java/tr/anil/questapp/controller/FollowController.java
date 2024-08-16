@@ -11,6 +11,7 @@ import tr.anil.questapp.service.FollowService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/follow")
@@ -23,24 +24,25 @@ public class FollowController {
     }
 
     @GetMapping
-    public FollowResponse getFollow(@RequestParam(value = "followerId") Optional<Long> followerId, @RequestParam(value = "followedId") Optional<Long> followedId) {
-        return followService.getFollow(followerId.get(),followedId.get());
+    public ResponseEntity<FollowResponse> getFollow(@RequestParam(value = "userId") Optional<Long> userId, @RequestParam(value = "followerId") Optional<Long> followerId) {
+        Follow follow = followService.getFollow(userId.get().longValue(),followerId.get().longValue());
+        return new ResponseEntity<>(follow != null ? new FollowResponse(follow):null, HttpStatus.OK);
     }
 
 
-    @GetMapping("/getmyfolloweds/{userId}")
-    public ResponseEntity<List<UserResponse>> getAllFollowedUserByFollowedUserId(@PathVariable Long userId){
-        return new ResponseEntity<>(followService.getFollowListByFollowedUserId(userId), HttpStatus.OK);
+    @GetMapping("/getmyfollowings/{userId}")
+    public ResponseEntity<List<UserResponse>> getAllFollowedUserByFollowingUserId(@PathVariable Long userId){
+        return new ResponseEntity<>(followService.getFollowListByFollowingUserId(userId).stream().map(p -> new UserResponse(p)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @GetMapping("/getmyfollowers/{userId}")
     public ResponseEntity<List<UserResponse>> getAllFollowerUserByFollowerUserId(@PathVariable Long userId){
-        return new ResponseEntity<>(followService.getFollowListByFollowerUserId(userId), HttpStatus.OK);
+        return new ResponseEntity<>(followService.getFollowListByFollowerUserId(userId).stream().map(p -> new UserResponse(p)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @PostMapping()
     public ResponseEntity<FollowResponse> saveFollow(@RequestBody FollowRequest followRequest){
-        return new ResponseEntity<>(followService.save(followRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(new FollowResponse(followService.save(followRequest)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{followId}")

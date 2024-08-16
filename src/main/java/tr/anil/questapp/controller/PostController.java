@@ -23,23 +23,23 @@ public class PostController {
 
     @GetMapping
     public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId) {
-        return postService.getAllPosts(userId);
+        return postService.convertPostListToPostResponseList(postService.getAllPosts(userId));
     }
 
     @GetMapping("/{postId}")
     public PostResponse getPost(@PathVariable Long postId) {
-        return postService.getPostByIdWithLikes(postId);
+        return new PostResponse(postService.getPostByIdWithLikes(postId));
     }
 
 
     @PostMapping
-    public Post savePost(@RequestBody PostCreateRequest postCreateRequest) {
-        return postService.savePost(postCreateRequest);
+    public PostResponse savePost(@RequestBody PostCreateRequest postCreateRequest) {
+        return new PostResponse(postService.savePost(postCreateRequest));
     }
 
     @PutMapping("/{postId}")
-    public Post updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
-        return postService.updatePostById(postId, postUpdateRequest);
+    public PostResponse updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest postUpdateRequest) {
+        return new PostResponse(postService.updatePostById(postId, postUpdateRequest));
     }
 
     @DeleteMapping("/{postId}")

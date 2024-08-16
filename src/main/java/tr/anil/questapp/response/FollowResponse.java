@@ -8,15 +8,15 @@ public class FollowResponse {
 
     Long id;
     Long followerId;
-    Long followedId;
+    Long followingId;
     String followerUsername;
-    String followedUsername;
+    String followingUsername;
 
     public FollowResponse(Follow follow) {
         this.id = follow.getId();
         this.followerId = follow.getFollowerUser().getId();
         this.followerUsername = follow.getFollowerUser().getUsername();
-        this.followedId = follow.getFollowedUser().getId();
-        this.followedUsername = follow.getFollowedUser().getUsername();
+        this.followingId = follow.getFollowingUser().getId();
+        this.followingUsername = follow.getFollowingUser().getUsername();
     }
 }

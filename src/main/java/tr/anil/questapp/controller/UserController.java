@@ -1,6 +1,8 @@
 package tr.anil.questapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tr.anil.questapp.dao.UserDao;
 import tr.anil.questapp.entity.User;
@@ -24,23 +26,24 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @PostMapping
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<UserResponse> saveUser(@RequestBody User user) {
+        return new ResponseEntity<>(new UserResponse(userService.saveUser(user)), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
-    public UserResponse getUser(@PathVariable Long userId) {
-        return new UserResponse(userService.getUser(userId), followService.getFollowedCountByUserId(userId), followService.getFollowerCountByUserId(userId));
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
+        User user = userService.getUser(userId);
+        return new ResponseEntity<>(new UserResponse(user, user.getFollowingCount(), user.getFollowerCount()), HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
-    public User updateUser(@PathVariable Long userId, @RequestBody User user) {
-        return userService.updateUser(userId,user);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @RequestBody User user) {
+        return new ResponseEntity<>(new UserResponse(userService.updateUser(userId,user)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}")
@@ -49,8 +52,8 @@ public class UserController {
     }
 
     @GetMapping("/activity/{userId}")
-    public List<Object> getActivityByUser(@PathVariable Long userId) {
-        return userService.getActivityByUser(userId);
+    public ResponseEntity<List<Object>> getActivityByUser(@PathVariable Long userId) {
+        return new ResponseEntity<>(userService.getActivityByUser(userId), HttpStatus.OK);
     }
 
 }

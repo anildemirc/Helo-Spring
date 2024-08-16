@@ -37,20 +37,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody UserRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody UserRequest loginRequest) {
+        AuthResponse authResponse = new AuthResponse();
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
         Authentication auth = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(auth);
         User user = userService.getUserByUsername(loginRequest.getUsername());
-        if (user == null)
-            throw new UserNotFoundException();
-        AuthResponse authResponse = new AuthResponse();
+        if (user == null) {
+            authResponse.setMessage("User not found");
+            return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
+        }
         authResponse.setAccessToken("Bearer "+jwtTokenProvider.generateJwtToken(auth));
         RefreshToken refreshToken = refreshTokenService.getByUser(user.getId());
         authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         authResponse.setMessage("User successfully logined");
-        return authResponse;
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 
     @PostMapping("/register")
